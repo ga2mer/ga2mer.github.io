@@ -4,45 +4,12 @@
 <head>
     <meta charset="utf-8">
     <title>ga2mer</title>
-    <script src="/fetch-jsonp.js"></script>
+    <link rel="stylesheet" href="/assets/style.css" type="text/css">
 </head>
 
 <body>
-    <button onclick="getToken()">Получить токен</button>
-    <div>Вставьте полностью весь юрл</div>
-    <input type="text" id="token" />
-    <div>Укажите .png</div>
-    <input type="file" id="file" />
-    <div>
-        <button onclick="getLink()">Получить ссылку</button>
-    </div>
-    <div id="link"></div>
-    <script>
-        function parseJSON(response) {
-            return response.json()
-        }
-        var getToken = () => {
-            window.open("https://oauth.vk.com/authorize?client_id=5553668&scope=docs&response_type=token");
-        }
-        var getLink = () => {
-            const tokenEl = document.querySelector('#token');
-            const fileEl = document.querySelector('#file');
-            const [, token] = /access_token=(.+)&expires_in/.exec(tokenEl.value);
-            var fd = new FormData();
-            fd.append('file', fileEl.files[0]);
-            fetchJsonp(`https://api.vk.com/method/docs.getUploadServer?v=5.54&access_token=${token}`).then(parseJSON).then((uploadServer) => {
-                    document.querySelector('#link').innerHTML = `Загрузка изображения долгая, подождите`;
-                    return fetch(`https://cors-anywhere.herokuapp.com/${uploadServer.response.upload_url}&type=graffiti`, {
-                        method: 'POST',
-                        body: fd
-                    }).then(parseJSON);
-                })
-                .then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(parseJSON)).then((responseDoc) => {
-                    var doc = responseDoc.response[0];
-                    var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`
-                    document.querySelector('#link').innerHTML = `<a href="${link}">${link}</a>`;
-                });
-        }
-    </script>
+    <div id="root"></div>
+    <script src="/assets/vendor.js"></script>
+    <script src="/assets/app.js"></script>
 </body>
 </html
