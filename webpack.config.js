@@ -7,7 +7,6 @@ const postcssMixins = require('postcss-mixins');
 const postcssSimpleVars = require('postcss-simple-vars');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
-console.log(process.env.NODE_ENV);
 const app = {
     entry: './src/main.jsx',
     bundle: 'app.js',
