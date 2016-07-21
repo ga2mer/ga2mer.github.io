@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "fetch-jsonp": "^1.0.0",
     "preact": "^5.4.0",
     "preact-compat": "^2.0.0"

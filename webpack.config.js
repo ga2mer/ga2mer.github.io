@@ -80,6 +80,7 @@ if (process.env.NODE_ENV == 'production') {
         compress: {
             warnings: false
         },
+        comments: false,
         sourceMap: false,
         mangle: false
     }), new webpack.optimize.DedupePlugin());
