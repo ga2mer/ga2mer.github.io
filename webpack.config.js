@@ -5,6 +5,7 @@ const postcssImport = require('postcss-import');
 const postcssNested = require('postcss-nested');
 const postcssMixins = require('postcss-mixins');
 const postcssSimpleVars = require('postcss-simple-vars');
+const postcssRemoveComments = require('postcss-discard-comments');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
 const app = {
@@ -27,7 +28,9 @@ var config = {
         ],
         alias: {
             'react': 'preact-compat',
-            'react-dom': 'preact-compat'
+            'react-dom': 'preact-compat',
+            'react-addons-shallow-compare': 'preact-shallow-compare',
+            'react-portal': 'preact-portal'
         }
     },
     plugins: [
@@ -71,7 +74,8 @@ var config = {
             postcssNested(),
             autoprefixer({
                 browsers: ['last 2 versions', '> 2%']
-            })
+            }),
+            postcssRemoveComments({removeAll: true})
         ];
     }
 };
