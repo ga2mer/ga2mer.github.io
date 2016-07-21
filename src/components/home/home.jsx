@@ -5,7 +5,9 @@ export default class Home extends Component {
         return (
             <div className="center-container">
                 <div className={'center'}>
-                    <img src={Nagisa}/>
+                    <img src={Nagisa} style={{
+                        maxWidth: '100%'
+                    }}/>
                     <ul className={"links"}>
                         <li>
                             <a href="https://vk.com/ga2mer_o_o">VK</a>
