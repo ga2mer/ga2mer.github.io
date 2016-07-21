@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
+import Input from 'semantic-react/lib/elements/input/input';
 import fetchJsonp from 'fetch-jsonp';
 export default class Graffiti extends Component {
     constructor() {
         super();
         this.state = {
             token: '',
+            tokenValid: false,
             url: '',
             error: '',
             link: '',
@@ -15,6 +17,7 @@ export default class Graffiti extends Component {
         this.handleLink = this.handleLink.bind(this);
         this.parseJSON = this.parseJSON.bind(this);
         this.checkStatus = this.checkStatus.bind(this);
+        this.handleClearFile = this.handleClearFile.bind(this);
     }
     checkStatus(response) {
         if (response.status >= 200 && response.status < 300) {
@@ -48,7 +51,10 @@ export default class Graffiti extends Component {
         window.open("https://oauth.vk.com/authorize?client_id=5553668&scope=docs&response_type=token");
     }
     handleToken(e) {
-        this.setState({token: e.target.value});
+        this.setState({
+            token: e.target.value,
+            tokenValid: /access_token=(.+)&expires_in/.test(e.target.value)
+        });
     }
     handleURL(e) {
         this.setState({url: e.target.value});
@@ -57,10 +63,6 @@ export default class Graffiti extends Component {
         this.setState({error: '', message: '', link: ''});
         const tokenEl = this.state.token;
         const fileEl = this.refs.file;
-        if (!/access_token=(.+)&expires_in/.exec(tokenEl)) {
-            this.setState({error: 'Неправильный юрл токена'});
-            return false;
-        }
         if (fileEl.files.length == 0 && this.state.url.length == 0) {
             this.setState({error: 'Не выбран файл или не заполнено поле юрл'});
             return false;
@@ -93,24 +95,32 @@ export default class Graffiti extends Component {
             this.setState({error: err.message, link: '', message: ''});
         });
     }
+    handleClearFile() {
+        this.refs.file.value = '';
+    }
     render(props, state) {
         return (
-            <div id="graffiti">
-                <button onClick={this.handleGetToken}>Получить токен</button>
-                <div>Вставьте полностью весь юрл</div>
-                <input type="text" id="token" value={state.token} onKeyUp={this.handleToken}/>
-                <div>Укажите .png</div>
-                <input ref={"file"} type={"file"}/>
-                <div>или ссылку на изображение</div>
-                <input type="text" value={state.url} onKeyUp={this.handleURL}/>
-                <div>
-                    <button onClick={this.handleLink}>Получить ссылку</button>
+            <div className={'center-container'}>
+                <div className={'center'}>
+                    <button className={'ui button'} onClick={this.handleGetToken}>Получить токен</button>
+                    <div>Вставьте полностью весь юрл</div>
+                    <Input type="text" fluid value={state.token} onKeyUp={this.handleToken} placeholder={'https://oauth.vk.com/blank...'}/>
+                    <div>Укажите .png</div>
+                    <div className={'ui input right action'}>
+                        <input disabled={!state.tokenValid || state.url.length > 0} ref={"file"} type={"file"}/>
+                        <button disabled={!state.tokenValid || state.url.length > 0} class="ui button primary" onClick={this.handleClearFile}>Clear</button>
+                    </div>
+                    <div>или ссылку на изображение</div>
+                    <Input fluid disabled={!state.tokenValid} type="text" value={state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
+                    <div>
+                        <button className={'ui button'} disabled={!state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
+                    </div>
+                    {state.error && <div>{state.error}</div>}
+                    {state.message && <div>{state.message}</div>}
+                    {state.link && <div>
+                        <a href={state.link}>{state.link}</a>
+                    </div>}
                 </div>
-                {state.error && <div>{state.error}</div>}
-                {state.message && <div>{state.message}</div>}
-                {state.link && <div>
-                    <a href={state.link}>{state.link}</a>
-                </div>}
             </div>
         );
     }
