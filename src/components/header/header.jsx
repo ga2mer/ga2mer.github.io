@@ -1,20 +1,20 @@
 import React, {Component} from 'react';
-import Router from 'preact-router';
+import {Link} from 'react-router';
 import cx from 'classnames';
 export default class Header extends Component {
-    render(props, state) {
+    render() {
         return (
-            <div className="ui secondary fixed pointing menu" style={{
+            <div className='ui secondary fixed pointing menu' style={{
                 background: 'white'
             }}>
-                <a className={cx({
+                <Link className={cx({
                     item: true,
-                    active: props.currentRoute == '/'
-                })} href="/">Me</a>
-                <a className={cx({
+                    active: this.props.currentRoute == '/'
+                })} to='/'>Me</Link>
+                <Link className={cx({
                     item: true,
-                    active: props.currentRoute == '/graffiti'
-                })} href="/graffiti">Graffiti</a>
+                    active: this.props.currentRoute == '/graffiti'
+                })} to='/graffiti'>Graffiti</Link>
             </div>
         );
     }

@@ -25,13 +25,7 @@ var config = {
     resolve: {
         extensions: [
             '', '.js', '.jsx'
-        ],
-        alias: {
-            'react': 'preact-compat',
-            'react-dom': 'preact-compat',
-            'react-addons-shallow-compare': 'preact-shallow-compare',
-            'react-portal': 'preact-portal'
-        }
+        ]
     },
     plugins: [
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ru/),

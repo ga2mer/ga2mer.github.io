@@ -1,33 +1,43 @@
 global.Promise = require('bluebird');
-import './style/main.scss'
+import './style/main.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Router from 'preact-router';
+import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 import Header from './components/header/header.jsx';
 import Home from './components/home/home.jsx';
 import Graffiti from './components/graffiti/graffiti.jsx';
+function Error() {
+    return (
+        <div>404</div>
+    );
+}
 class App extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            currentRoute: null
+            currentRoute: '/'
         };
         this.handleRoute = this.handleRoute.bind(this);
     }
     handleRoute(e) {
+        console.log(e);
         this.setState({currentRoute: e.url});
     }
-    render(props, state) {
+    render() {
         return (
-            <div class="app">
-                <Header currentRoute={state.currentRoute}/>
-                <Router onChange={this.handleRoute}>
-                    <Home path="/"/>
-                    <Graffiti path="/graffiti"/>
-                    <Error type="404" default/>
-                </Router>
+            <div className='app'>
+                <Header currentRoute={this.props.location.pathname}/>
+                {this.props.children}
             </div>
         );
     }
 }
-ReactDOM.render((<App/>), document.querySelector('#root'));
+ReactDOM.render((
+    <Router history={browserHistory}>
+        <Route path='/' component={App}>
+            <IndexRoute component={Home} />
+            <Route path='graffiti' component={Graffiti}/>
+            <Route path='*' component={Error}/>
+        </Route>
+    </Router>
+), document.querySelector('#root'));

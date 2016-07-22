@@ -12,7 +12,7 @@ export default class Graffiti extends Component {
             link: '',
             message: ''
         };
-        this.handleToken = this.handleToken.bind(this);
+        this.handleChangeToken = this.handleChangeToken.bind(this);
         this.handleURL = this.handleURL.bind(this);
         this.handleLink = this.handleLink.bind(this);
         this.parseJSON = this.parseJSON.bind(this);
@@ -41,16 +41,18 @@ export default class Graffiti extends Component {
             } else if (json.error && json.error.error_code == 5) {
                 var message = 'Токен неправильный или устарел';
                 return Promise.reject(new Error(message));
+            } else if (json.error) {
+                return Promise.reject(new Error(json.error.error_msg));
             }
         });
     }
     parseJSON(response) {
-        return response.json()
+        return response.json();
     }
     handleGetToken() {
-        window.open("https://oauth.vk.com/authorize?client_id=5553668&scope=docs&response_type=token");
+        window.open('https://oauth.vk.com/authorize?client_id=5553668&scope=docs&response_type=token');
     }
-    handleToken(e) {
+    handleChangeToken(e) {
         this.setState({
             token: e.target.value,
             tokenValid: /access_token=(.+)&expires_in/.test(e.target.value)
@@ -62,7 +64,7 @@ export default class Graffiti extends Component {
     handleLink() {
         this.setState({error: '', message: '', link: ''});
         const tokenEl = this.state.token;
-        const fileEl = this.refs.file;
+        const fileEl = this.file;
         if (fileEl.files.length == 0 && this.state.url.length == 0) {
             this.setState({error: 'Не выбран файл или не заполнено поле юрл'});
             return false;
@@ -89,36 +91,36 @@ export default class Graffiti extends Component {
             }
         }).then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(this.parseJSON)).then((responseDoc) => {
             var doc = responseDoc.response[0];
-            var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`
-            this.setState({link: link, err: '', message: ''});
-        }).catch(err => {
+            var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`;
+            this.setState({link, err: '', message: ''});
+        }).catch((err) => {
             this.setState({error: err.message, link: '', message: ''});
         });
     }
     handleClearFile() {
-        this.refs.file.value = '';
+        this.file.value = '';
     }
-    render(props, state) {
+    render() {
         return (
             <div className={'center-container'}>
                 <div className={'center'}>
                     <button className={'ui button'} onClick={this.handleGetToken}>Получить токен</button>
                     <div>Вставьте полностью весь юрл</div>
-                    <Input type="text" fluid value={state.token} onKeyUp={this.handleToken} placeholder={'https://oauth.vk.com/blank...'}/>
+                    <Input type='text' fluid value={this.state.token} onChange={this.handleChangeToken} placeholder={'https://oauth.vk.com/blank...'}/>
                     <div>Укажите .png</div>
                     <div className={'ui input right action'}>
-                        <input disabled={!state.tokenValid || state.url.length > 0} ref={"file"} type={"file"}/>
-                        <button disabled={!state.tokenValid || state.url.length > 0} class="ui button primary" onClick={this.handleClearFile}>Clear</button>
+                        <input disabled={!this.state.tokenValid || this.state.url.length > 0} ref={(c) => this.file = c} type={'file'}/>
+                        <button disabled={!this.state.tokenValid || this.state.url.length > 0} className='ui button primary' onClick={this.handleClearFile}>Clear</button>
                     </div>
                     <div>или ссылку на изображение</div>
-                    <Input fluid disabled={!state.tokenValid} type="text" value={state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
+                    <Input fluid disabled={!this.state.tokenValid} type='text' value={this.state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
                     <div>
-                        <button className={'ui button'} disabled={!state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
+                        <button className={'ui button'} disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
                     </div>
-                    {state.error && <div>{state.error}</div>}
-                    {state.message && <div>{state.message}</div>}
-                    {state.link && <div>
-                        <a href={state.link}>{state.link}</a>
+                    {this.state.error && <div>{this.state.error}</div>}
+                    {this.state.message && <div>{this.state.message}</div>}
+                    {this.state.link && <div>
+                        <a href={this.state.link}>{this.state.link}</a>
                     </div>}
                 </div>
             </div>
