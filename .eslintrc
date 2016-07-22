@@ -1,0 +1,66 @@
+{
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "globals": {
+        "ArrayBuffer": true,
+        "Uint8Array": true,
+        "Promise": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "arrowFunctions": true,
+            "classes": true
+        }
+    },
+    "plugins": ["react", "babel"],
+    "rules": {
+        "quotes": [1, "single"],
+        "semi": [2, "always"],
+        "arrow-body-style": [1, "as-needed"],
+        "arrow-spacing": [2, {"before": true, "after": true}],
+        "babel/object-shorthand": 1,
+        "babel/generator-star-spacing": 1,
+        "babel/no-await-in-loop": 2,
+        "prefer-rest-params": 1,
+        "prefer-arrow-callback": 1,
+        "babel/arrow-parens": 2,
+        "dot-notation": [2, { "allowPattern": "^[a-z]+((_|-)[a-z]+)+$" }],
+        "no-delete-var": 2,
+        "no-undef": 2,
+        "no-undefined": 2,
+        "no-unused-vars": [1, { "argsIgnorePattern": "[iI]gnored" }],
+        "constructor-super": 2,
+        "no-const-assign": 2,
+        "no-this-before-super": 2,
+        "curly": 2,
+        "one-var": 0,
+        "react/no-direct-mutation-state": 2,
+        "react/no-unknown-property": 2,
+        "react/prefer-es6-class": [2, "always"],
+        "react/require-extension": [1, {"extensions": [".js", ".jsx"]}],
+        "react/wrap-multilines": 1,
+        "react/jsx-no-undef": 2,
+        "react/jsx-no-duplicate-props": 2,
+        "react/jsx-no-bind": 0,
+        "react/jsx-boolean-value": [1, "never"],
+        "react/jsx-handler-names": 1,
+        "react/jsx-key": 1,
+        "react/jsx-pascal-case": 1,
+        "react/jsx-uses-react": 1,
+        "react/jsx-uses-vars": 1,
+        "react/no-comment-textnodes": 2,
+        "react/no-danger": 2,
+        "react/no-did-mount-set-state": 1,
+        "react/no-did-update-set-state": 1,
+        "react/no-string-refs": 1,
+        "react/require-render-return": 2,
+        "react/self-closing-comp": 2,
+        "react/sort-comp": 1
+    }
+}
