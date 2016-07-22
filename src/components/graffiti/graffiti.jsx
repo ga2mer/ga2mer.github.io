@@ -73,9 +73,12 @@ export default class Graffiti extends Component {
             token] = /access_token=(.+)&expires_in/.exec(tokenEl);
         var fd = new FormData();
         fd.append('file', fileEl.files[0]);
-        var regex = /pu\.vk\.com\/([a-z0-9]+)\/upload\.php\?act=add_doc&mid=([0-9]+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
+        var regexHttps = /pu\.vk\.com\/c(\d+)\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
+        var regexHttp = /cs(\d+)\.vk\.com\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)/i;
         fetchJsonp(`https://api.vk.com/method/docs.getUploadServer?v=5.54&access_token=${token}&type=graffiti`).then(this.checkStatusP).then(this.parseJSON).then((uploadServer) => {
             this.setState({message: 'Загрузка изображения, подождите'});
+            var isHTTPS = regexHttps.test(uploadServer.response.upload_url);
+            var regex = isHTTPS && regexHttps || regexHttp;
             var [,
                 c,
                 mid,
