@@ -5,9 +5,12 @@ const postcssImport = require('postcss-import');
 const postcssNested = require('postcss-nested');
 const postcssMixins = require('postcss-mixins');
 const postcssSimpleVars = require('postcss-simple-vars');
+const postcssRemoveEmpty = require('postcss-discard-empty');
 const postcssRemoveComments = require('postcss-discard-comments');
+const postcssRemoveDuiplicate = require('postcss-discard-duplicates');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
+const purify = require('purifycss-webpack-plugin');
 const app = {
     entry: './src/main.jsx',
     bundle: 'app.js',
@@ -23,9 +26,7 @@ var config = {
         path: path.join(__dirname, app.dest)
     },
     resolve: {
-        extensions: [
-            '', '.js', '.jsx'
-        ]
+        extensions: ['', '.js', '.jsx']
     },
     plugins: [
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ru/),
@@ -42,7 +43,7 @@ var config = {
     module: {
         loaders: [
             {
-                test: /\.jsx?$/,
+                test: /\.js(x)?$/,
                 exclude: /(node_modules|bower_components)/,
                 loader: 'babel',
                 query: {
@@ -53,10 +54,10 @@ var config = {
                 loader: ExtractTextPlugin.extract({fallbackLoader: 'style-loader', loader: 'css-loader!postcss-loader'})
             }, {
                 test: /\.woff|\.woff2|\.svg|.eot|\.ttf/,
-                loader: 'url?prefix=font/&limit=10000&name=assets/[name].[ext]'
+                loader: 'url?prefix=font/&limit=10000&name=[name].[ext]'
             }, {
                 test: /\.(png|jpg)$/,
-                loader: 'url-loader?limit=8192'
+                loader: 'url-loader?limit=8192&name=[name].[ext]'
             }
         ]
     },
@@ -69,12 +70,14 @@ var config = {
             autoprefixer({
                 browsers: ['last 2 versions', '> 2%']
             }),
-            postcssRemoveComments({removeAll: true})
+            postcssRemoveComments({removeAll: true}),
+            postcssRemoveEmpty(),
+            postcssRemoveDuiplicate()
         ];
     }
 };
 if (process.env.NODE_ENV == 'production') {
-    config.plugins.push(new webpack.LoaderOptionsPlugin({minimize: true, debug: false}), new webpack.optimize.UglifyJsPlugin({
+    config.plugins.push(new purify({basePath: __dirname, paths: ['index.html']}), new webpack.LoaderOptionsPlugin({minimize: true, debug: false}), new webpack.optimize.UglifyJsPlugin({
         compress: {
             warnings: false
         },
