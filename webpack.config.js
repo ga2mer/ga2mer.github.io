@@ -83,13 +83,17 @@ if (process.env.NODE_ENV == 'production') {
             minify: true
         },
         paths: ['index.html']
-    }), new webpack.LoaderOptionsPlugin({minimize: true, debug: false}), new webpack.optimize.UglifyJsPlugin({
+    }), new webpack.DefinePlugin({
+        'process.env': {
+            NODE_ENV: JSON.stringify('production')
+        }
+    }), new webpack.optimize.UglifyJsPlugin({
         compress: {
             warnings: false
         },
         comments: false,
         sourceMap: false,
-        mangle: false
+        mangle: true
     }), new webpack.optimize.DedupePlugin());
 }
 
