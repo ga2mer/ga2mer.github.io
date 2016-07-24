@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import cx from 'classnames';
 import fetchJsonp from 'fetch-jsonp';
 import VKError from '../../lib/VKError';
 export default class Graffiti extends Component {
@@ -8,9 +9,10 @@ export default class Graffiti extends Component {
             token: '',
             tokenValid: false,
             url: '',
-            error: '',
-            link: '',
-            message: ''
+            info: {
+                type: '',
+                message: ''
+            }
         };
     }
     checkStatus(response) {
@@ -52,12 +54,20 @@ export default class Graffiti extends Component {
     handleURL = (e) => {
         this.setState({url: e.target.value});
     }
+    setInfo = (type, message) => {
+        this.setState({
+            info: {
+                type,
+                message
+            }
+        });
+    }
     handleLink = () => {
-        this.setState({error: '', message: '', link: ''});
+        this.setInfo('', '');
         const tokenEl = this.state.token;
         const fileEl = this.file;
         if (fileEl.files.length == 0 && this.state.url.length == 0) {
-            this.setState({error: 'Не выбран файл или не заполнено поле юрл'});
+            this.setInfo('error', 'Не выбран файл или не заполнено поле юрл');
             return false;
         }
         const [,
@@ -66,7 +76,7 @@ export default class Graffiti extends Component {
         fd.append('file', fileEl.files[0]);
         var regexHttps = /pu\.vk\.com\/c(\d+)\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
         var regexHttp = /cs(\d+)\.vk\.com\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)/i;
-        this.setState({message: 'Загрузка изображения, подождите'});
+        this.setInfo('message', 'Загрузка изображения, подождите');
         fetchJsonp(`https://api.vk.com/method/docs.getUploadServer?v=5.54&access_token=${token}&type=graffiti`).then(this.checkStatusP).then(this.parseJSON).then((uploadServer) => {
             var isHTTPS = regexHttps.test(uploadServer.response.upload_url);
             var regex = isHTTPS && regexHttps || regexHttp;
@@ -86,12 +96,12 @@ export default class Graffiti extends Component {
         }).then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(this.parseJSON)).then((responseDoc) => {
             var doc = responseDoc.response[0];
             var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`;
-            this.setState({link, err: '', message: ''});
+            this.setInfo('link', link);
         }).catch((err) => {
             if (err instanceof VKError) {
-                return this.setState({error: err.message, link: '', message: ''});
+                return this.setInfo('error', err.message);
             }
-            this.setState({error: err.message, link: '', message: ''});
+            this.setInfo('error', err.message);
         });
     }
     handleClearFile = () => {
@@ -100,22 +110,13 @@ export default class Graffiti extends Component {
     handleSelectAll(e) {
         e.target.setSelectionRange(0, e.target.value.length);
     }
-    copyToClipboard(text) {
-        const input = document.createElement('input');
-        input.style.position = 'fixed';
-        input.style.opacity = 0;
-        input.value = text;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('Copy');
-        document.body.removeChild(input);
-    }
     handleCopyLink = () => {
-        this.copyToClipboard(this.state.link);
+        this.linkInput.select();
+        document.execCommand('Copy');
     }
     render() {
         return (
-            <div className={'container'}>
+            <div className={'container middle-container'}>
                 <div className={'container center-text'} style={{
                     maxWidth: '450px'
                 }}>
@@ -145,16 +146,27 @@ export default class Graffiti extends Component {
                         <div>
                             <button className='btn btn-secondary sharp' type='button' disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
                         </div>
-                        {(this.state.error || this.state.message || this.state.link) && <div className={'divider'}/>}
-                        {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
-                        {this.state.message && <div className="alert alert-info" role="alert">{this.state.message}</div>}
-                        {this.state.link && <div className="alert alert-success" role="alert">
-                            <div className={'input-group'}>
-                                <input type='text' className={'form-control sharp'} readOnly onClick={this.handleSelectAll} defaultValue={this.state.link}/>
-                                <span className='input-group-btn'>
-                                    <button className='btn btn-primary sharp' type='button' onClick={this.handleCopyLink}>Скопировать</button>
-                                </span>
-                            </div>
+                        {this.state.info.type && <div className={'divider'}/>}
+                        {this.state.info.type && <div className={cx({
+                            alert: true,
+                            'alert-danger': this.state.info.type == 'error',
+                            'alert-info': this.state.info.type == 'message',
+                            'alert-success': this.state.info.type == 'link'
+                        })} role="alert">
+                            {(() => {
+                                if (this.state.info.type == 'link') {
+                                    return (
+                                        <div className={'input-group'}>
+                                            <input type='text' ref={(c) => this.linkInput = c} className={'form-control sharp'} readOnly onClick={this.handleSelectAll} defaultValue={this.state.info.message}/>
+                                            <span className='input-group-btn'>
+                                                <button className='btn btn-primary sharp' type='button' onClick={this.handleCopyLink}>Скопировать</button>
+                                            </span>
+                                        </div>
+                                    );
+                                } else {
+                                    return this.state.info.message;
+                                }
+                            })()}
                         </div>}
                     </form>
                 </div>

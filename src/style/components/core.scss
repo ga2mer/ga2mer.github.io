@@ -20,33 +20,8 @@ body {
         }
     }
 }
-.container {
+.middle-container {
     padding-top: 5rem;
-}
-.navbar-pills {
-    border-bottom: 2px solid rgba(34,36,38,.15);
-    border-radius: 0;
-    color: #000 !important;
-    background-color: transparent !important;
-}
-.nav-pills > li > a {
-    text-decoration: none;
-    color: #000 !important;
-    background-color: transparent !important;
-    margin: 0 0 -10px;
-}
-.nav-pills > .active > a {
-    text-decoration: none;
-    font-weight: 700;
-    border-radius: 0;
-    border-bottom-width: 2px;
-    border-bottom-style: solid;
-    border-bottom-color: #FF6600;
-    color: #000 !important;
-    background-color: transparent !important;
-}
-.nav-pills > li > a {
-    border-radius: 0;
 }
 .btn:focus {
     outline: none;
@@ -58,7 +33,6 @@ body {
     height: 1px;
     width: 100%;
     display: block;
-    /* for use on default inline elements like span */
     margin: 9px 0;
     overflow: hidden;
     background-color: #e5e5e5;

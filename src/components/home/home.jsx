@@ -3,9 +3,7 @@ import Nagisa from '../../images/nagisa.png';
 export default function Home() {
     return (
         <div className={'vertical-center'}>
-            <div className={'container center-text'} style={{
-                maxWidth: '450px'
-            }}>
+            <div className={'container center-text'}>
                 <img src={Nagisa} className={'img-fluid'}/>
                 <ul className={'links'}>
                     <li>
