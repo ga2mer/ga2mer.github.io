@@ -9,8 +9,8 @@ const postcssRemoveEmpty = require('postcss-discard-empty');
 const postcssRemoveComments = require('postcss-discard-comments');
 const postcssRemoveDuiplicate = require('postcss-discard-duplicates');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const Purify = require('purifycss-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
-const purify = require('purifycss-webpack-plugin');
 const app = {
     entry: './src/main.jsx',
     bundle: 'app.js',
@@ -77,7 +77,13 @@ var config = {
     }
 };
 if (process.env.NODE_ENV == 'production') {
-    config.plugins.push(new purify({basePath: __dirname, paths: ['index.html']}), new webpack.LoaderOptionsPlugin({minimize: true, debug: false}), new webpack.optimize.UglifyJsPlugin({
+    config.plugins.push(new Purify({
+        basePath: __dirname,
+        purifyOptions: {
+            minify: true
+        },
+        paths: ['index.html']
+    }), new webpack.LoaderOptionsPlugin({minimize: true, debug: false}), new webpack.optimize.UglifyJsPlugin({
         compress: {
             warnings: false
         },
