@@ -3,38 +3,123 @@ html {
 }
 body {
     height: 100%;
+    min-width: 320px;
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
     #root {
         height: 100%;
         .app {
             height: 100%;
+            .grid {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
         }
     }
+}
+.container {
+    padding-top: 5rem;
+}
+.navbar-pills {
+    border-bottom: 2px solid rgba(34,36,38,.15);
+    border-radius: 0;
+    color: #000 !important;
+    background-color: transparent !important;
+}
+.nav-pills > li > a {
+    text-decoration: none;
+    color: #000 !important;
+    background-color: transparent !important;
+    margin: 0 0 -10px;
+}
+.nav-pills > .active > a {
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 0;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: #FF6600;
+    color: #000 !important;
+    background-color: transparent !important;
+}
+.nav-pills > li > a {
+    border-radius: 0;
+}
+.btn:focus {
+    outline: none;
+}
+.sharp {
+    border-radius: 0;
+}
+.divider {
+    height: 1px;
+    width: 100%;
+    display: block;
+    /* for use on default inline elements like span */
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+}
+.strike {
+    display: block;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    > span {
+        position: relative;
+        display: inline-block;
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 9999px;
+            height: 1px;
+            background: red;
+        }
+        &:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 9999px;
+            height: 1px;
+            background: red;
+            background-color: #e5e5e5;
+            right: 100%;
+            margin-right: 15px;
+        }
+        &:after {
+            background-color: #e5e5e5;
+            left: 100%;
+            margin-left: 15px;
+        }
+    }
+}
+.vertical-center {
+    min-height: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+}
+.center-text {
+    text-align: center;
 }
 a {
     background: 0 0;
     color: #4183C4;
     text-decoration: none;
 }
-.center-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    .center {
-        text-align: center;
-    }
-    ul.links {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        li {
-            display: inline-flex;
-            a {
-                padding: 8px;
-            }
+ul.links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    li {
+        display: inline-flex;
+        a {
+            padding: 8px;
         }
     }
 }

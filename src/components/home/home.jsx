@@ -1,23 +1,21 @@
-import React, {Component} from 'react';
-var Nagisa = require('../../images/nagisa.png');
-export default class Home extends Component {
-    render() {
-        return (
-            <div className='center-container'>
-                <div className={'center'}>
-                    <img src={Nagisa} style={{
-                        maxWidth: '100%'
-                    }}/>
-                    <ul className={'links'}>
-                        <li>
-                            <a href='https://vk.com/ga2mer_o_o'>VK</a>
-                        </li>
-                        <li>
-                            <a href='https://twitter.com/ga2mer_ru'>Twitter</a>
-                        </li>
-                    </ul>
-                </div>
+import React from 'react';
+import Nagisa from '../../images/nagisa.png';
+export default function Home() {
+    return (
+        <div className={'vertical-center'}>
+            <div className={'container center-text'} style={{
+                maxWidth: '450px'
+            }}>
+                <img src={Nagisa} className={'img-fluid'}/>
+                <ul className={'links'}>
+                    <li>
+                        <a href='https://vk.com/ga2mer_o_o'>VK</a>
+                    </li>
+                    <li>
+                        <a href='https://twitter.com/ga2mer_ru'>Twitter</a>
+                    </li>
+                </ul>
             </div>
-        );
-    }
+        </div>
+    );
 }

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import Input from 'semantic-react/lib/elements/input/input';
 import fetchJsonp from 'fetch-jsonp';
+import VKError from '../../lib/VKError';
 export default class Graffiti extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             token: '',
             tokenValid: false,
@@ -12,12 +12,6 @@ export default class Graffiti extends Component {
             link: '',
             message: ''
         };
-        this.handleChangeToken = this.handleChangeToken.bind(this);
-        this.handleURL = this.handleURL.bind(this);
-        this.handleLink = this.handleLink.bind(this);
-        this.parseJSON = this.parseJSON.bind(this);
-        this.checkStatus = this.checkStatus.bind(this);
-        this.handleClearFile = this.handleClearFile.bind(this);
     }
     checkStatus(response) {
         if (response.status >= 200 && response.status < 300) {
@@ -27,8 +21,8 @@ export default class Graffiti extends Component {
                 var message;
                 if (json.message) {
                     message = json.message == 'File too large' && 'Размер файла превышает 4мб' || json.message;
-                } else if (json.error && json.error.error_code == 5) {
-                    message = 'Токен неправильный или устарел';
+                } else if (json.error && json.error.error_code) {
+                    return Promise.reject(new VKError(json.error.error_msg, json.error.error_code));
                 }
                 return Promise.reject(new Error(message));
             });
@@ -38,30 +32,27 @@ export default class Graffiti extends Component {
         return response.json().then((json) => {
             if (json.response) {
                 return response;
-            } else if (json.error && json.error.error_code == 5) {
-                var message = 'Токен неправильный или устарел';
-                return Promise.reject(new Error(message));
+            } else if (json.error && json.error.error_code) {
+                return Promise.reject(new VKError(json.error.error_msg, json.error.error_code));
             } else if (json.error) {
                 return Promise.reject(new Error(json.error.error_msg));
             }
         });
     }
-    parseJSON(response) {
-        return response.json();
-    }
+    parseJSON = (response) => response.json()
     handleGetToken() {
         window.open('https://oauth.vk.com/authorize?client_id=5553668&scope=docs&response_type=token');
     }
-    handleChangeToken(e) {
+    handleChangeToken = (e) => {
         this.setState({
             token: e.target.value,
             tokenValid: /access_token=(.+)&expires_in/.test(e.target.value)
         });
     }
-    handleURL(e) {
+    handleURL = (e) => {
         this.setState({url: e.target.value});
     }
-    handleLink() {
+    handleLink = () => {
         this.setState({error: '', message: '', link: ''});
         const tokenEl = this.state.token;
         const fileEl = this.file;
@@ -75,8 +66,8 @@ export default class Graffiti extends Component {
         fd.append('file', fileEl.files[0]);
         var regexHttps = /pu\.vk\.com\/c(\d+)\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
         var regexHttp = /cs(\d+)\.vk\.com\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)/i;
+        this.setState({message: 'Загрузка изображения, подождите'});
         fetchJsonp(`https://api.vk.com/method/docs.getUploadServer?v=5.54&access_token=${token}&type=graffiti`).then(this.checkStatusP).then(this.parseJSON).then((uploadServer) => {
-            this.setState({message: 'Загрузка изображения, подождите'});
             var isHTTPS = regexHttps.test(uploadServer.response.upload_url);
             var regex = isHTTPS && regexHttps || regexHttp;
             var [,
@@ -97,34 +88,75 @@ export default class Graffiti extends Component {
             var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`;
             this.setState({link, err: '', message: ''});
         }).catch((err) => {
+            if (err instanceof VKError) {
+                return this.setState({error: err.message, link: '', message: ''});
+            }
             this.setState({error: err.message, link: '', message: ''});
         });
     }
-    handleClearFile() {
+    handleClearFile = () => {
         this.file.value = '';
+    }
+    handleSelectAll(e) {
+        e.target.setSelectionRange(0, e.target.value.length);
+    }
+    copyToClipboard(text) {
+        const input = document.createElement('input');
+        input.style.position = 'fixed';
+        input.style.opacity = 0;
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('Copy');
+        document.body.removeChild(input);
+    }
+    handleCopyLink = () => {
+        this.copyToClipboard(this.state.link);
     }
     render() {
         return (
-            <div className={'center-container'}>
-                <div className={'center'}>
-                    <button className={'ui button'} onClick={this.handleGetToken}>Получить токен</button>
-                    <div>Вставьте полностью весь юрл</div>
-                    <Input type='text' fluid value={this.state.token} onChange={this.handleChangeToken} placeholder={'https://oauth.vk.com/blank...'}/>
-                    <div>Укажите .png</div>
-                    <div className={'ui input right action'}>
-                        <input disabled={!this.state.tokenValid || this.state.url.length > 0} ref={(c) => this.file = c} type={'file'}/>
-                        <button disabled={!this.state.tokenValid || this.state.url.length > 0} className='ui button primary' onClick={this.handleClearFile}>Clear</button>
-                    </div>
-                    <div>или ссылку на изображение</div>
-                    <Input fluid disabled={!this.state.tokenValid} type='text' value={this.state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
-                    <div>
-                        <button className={'ui button'} disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
-                    </div>
-                    {this.state.error && <div>{this.state.error}</div>}
-                    {this.state.message && <div>{this.state.message}</div>}
-                    {this.state.link && <div>
-                        <a href={this.state.link}>{this.state.link}</a>
-                    </div>}
+            <div className={'container'}>
+                <div className={'container center-text'} style={{
+                    maxWidth: '450px'
+                }}>
+                    Здесь когда-нибудь будет описание
+                    <form>
+                        <label htmlFor={'token'}>Адрес с access_token</label>
+                        <div className={'input-group'}>
+                            <input id={'token'} type='text' className={'form-control sharp'} value={this.state.token} onChange={this.handleChangeToken} placeholder={'https://oauth.vk.com/blank...'}/>
+                            <span className='input-group-btn'>
+                                <button className='btn btn-primary sharp' type='button' onClick={this.handleGetToken}>Получить</button>
+                            </span>
+                        </div>
+                        <label htmlFor={'file'}>Изображение в формате: png, jpg или gif</label>
+                        <div className={'input-group'}>
+                            <input id={'file'} className={'form-control sharp'} disabled={!this.state.tokenValid || this.state.url.length > 0} ref={(c) => this.file = c} type={'file'}/>
+                            <span className={'input-group-btn'}>
+                                <button className='btn btn-primary sharp' type='button' disabled={!this.state.tokenValid || this.state.url.length > 0} onClick={this.handleClearFile}>Очистить</button>
+                            </span>
+                        </div>
+                        <div className={'strike'}>
+                            <span>
+                                или ссылку на изображение
+                            </span>
+                        </div>
+                        <input className={'form-control sharp'} disabled={!this.state.tokenValid} type='text' value={this.state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
+                        <div className={'divider'}/>
+                        <div>
+                            <button className='btn btn-secondary sharp' type='button' disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
+                        </div>
+                        {(this.state.error || this.state.message || this.state.link) && <div className={'divider'}/>}
+                        {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
+                        {this.state.message && <div className="alert alert-info" role="alert">{this.state.message}</div>}
+                        {this.state.link && <div className="alert alert-success" role="alert">
+                            <div className={'input-group'}>
+                                <input type='text' className={'form-control sharp'} readOnly onClick={this.handleSelectAll} defaultValue={this.state.link}/>
+                                <span className='input-group-btn'>
+                                    <button className='btn btn-primary sharp' type='button' onClick={this.handleCopyLink}>Скопировать</button>
+                                </span>
+                            </div>
+                        </div>}
+                    </form>
                 </div>
             </div>
         );
