@@ -141,7 +141,7 @@ export default class Graffiti extends Component {
                                 или ссылку на изображение
                             </span>
                         </div>
-                        <input className={'form-control sharp'} disabled={!this.state.tokenValid} type='text' value={this.state.url} onKeyUp={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
+                        <input className={'form-control sharp'} disabled={!this.state.tokenValid} type='text' value={this.state.url} onChange={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
                         <div className={'divider'}/>
                         <div>
                             <button className='btn btn-secondary sharp' type='button' disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
