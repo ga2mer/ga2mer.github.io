@@ -6,10 +6,10 @@
     "bluebird": "^3.4.1",
     "classnames": "^2.2.5",
     "fetch-jsonp": "^1.0.0",
-    "react": "^15.2.1",
+    "react": "^15.3.0-rc.3",
     "react-addons-shallow-compare": "^15.2.1",
-    "react-dom": "^15.2.1",
-    "react-router": "^2.6.0"
+    "react-dom": "^15.3.0-rc.3",
+    "react-router": "^3.0.0-alpha.2"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",
