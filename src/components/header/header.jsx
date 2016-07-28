@@ -19,6 +19,12 @@ export default function Header({currentRoute}) {
                 })}>
                     <Link className={'nav-link'} to='/graffiti'>Graffiti</Link>
                 </li>
+                <li className={cx({
+                    'nav-item': true,
+                    active: currentRoute == '/cover'
+                })}>
+                    <Link className={'nav-link'} to='/cover'>Cover</Link>
+                </li>
             </ul>
         </nav>
     );

@@ -1,4 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,300italic&subset=latin,cyrillic);
-@import "bootstrap";
+@import "bootstrap.min.css";
+@import "cropperjs/dist/cropper.min.css";
 @import "components/core.scss";
 @import "components/header.scss";
+@import "components/cover.scss";
