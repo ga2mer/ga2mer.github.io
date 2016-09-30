@@ -86,12 +86,12 @@ export default class Graffiti extends Component {
                 hash,
                 rhash] = regex.exec(uploadServer.response.upload_url);
             if (fileEl.files.length > 0) {
-                return fetch(`https://akigami.ru/vkgraffiti/upload_by_file?c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {
+                return fetch(`https://akg.moe/vkgraffiti/upload_by_file?c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {
                     method: 'POST',
                     body: fd
                 }).then(this.checkStatus).then(this.parseJSON);
             } else if (this.state.url) {
-                return fetch(`https://akigami.ru/vkgraffiti/upload_by_url?url=${this.state.url}&c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {method: 'POST'}).then(this.checkStatus).then(this.parseJSON);
+                return fetch(`https://akg.moe/vkgraffiti/upload_by_url?url=${this.state.url}&c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {method: 'POST'}).then(this.checkStatus).then(this.parseJSON);
             }
         }).then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(this.parseJSON)).then((responseDoc) => {
             var doc = responseDoc.response[0];
