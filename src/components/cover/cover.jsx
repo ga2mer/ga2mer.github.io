@@ -3,8 +3,14 @@ import Cropper from 'react-cropper';
 import {saveAs} from 'file-saver';
 import HIRES from '../../images/hires.png';
 import LOSSY from '../../images/lossy.png';
+import LOSSY_V2 from '../../images/lossy_v2.png';
+import '../../lib/blur_rect';
 export default class CoverGenerator extends Component {
     componentDidMount() {
+        this.state = {
+            hires: false,
+            v2: true
+        };
         this.initCanvas();
         this.initCover();
     }
@@ -17,7 +23,7 @@ export default class CoverGenerator extends Component {
     initCanvas = () => {
         this.ctx = this.canvas.getContext('2d');
     }
-    initCover = (hires) => {
+    initCover = () => {
         this.cover = new Image();
         this.cover.onload = () => {
             this.ctx.drawImage(this.cover, 0, 323, 500, 177);
@@ -25,7 +31,11 @@ export default class CoverGenerator extends Component {
                 this.renderCover();
             }
         };
-        this.cover.src = hires && HIRES || LOSSY;
+        this.cover.src = this.state.hires
+            ? HIRES
+            : (this.state.v2)
+                ? LOSSY_V2
+                : LOSSY;
     }
     onCrop = (e) => {
         this.x = e.x;
@@ -53,9 +63,11 @@ export default class CoverGenerator extends Component {
         canvas.height = 800;
         let ctx = canvas.getContext('2d');
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 800, 800);
+        ctx._blurRect(0, 704, 616, 96, 1, 2);
+        ctx._blurRect(671, 652, 129, 148, 1, 2);
         ctx.drawImage(this.cover, 0, 517, 800, 283);
         ctx.font = '42px Roboto Medium';
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = '#2d2d2d';
         ctx.fillText(this.text, 34, 764);
         canvas.toBlob((blob) => {
             saveAs(blob, 'cover.png');
@@ -64,14 +76,20 @@ export default class CoverGenerator extends Component {
     renderCover() {
         this.ctx.clearRect(0, 0, 500, 500);
         this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 500, 500);
+        this.ctx._blurRect(0, 439, 400, 61, 1, 2);
+        this.ctx._blurRect(419, 404, 70, 80, 1, 2);
         this.ctx.drawImage(this.cover, 0, 323, 500, 177);
         this.ctx.font = '32px Roboto Medium';
-        this.ctx.fillStyle = 'white';
+        this.ctx.fillStyle = '#2d2d2d';
         this.ctx.fillText(this.text, 14, 480);
     }
     handleChangeQuality = (hires) => {
-        this.ctx.clearRect(0, 0, 500, 500);
-        this.initCover(hires);
+        this.setState({
+            hires
+        }, () => {
+            this.ctx.clearRect(0, 0, 500, 500);
+            this.initCover();
+        });
     }
     render() {
         return (
@@ -80,7 +98,7 @@ export default class CoverGenerator extends Component {
                     <div className="row">
                         <div className="col-sm-6">
                             <div className="cover">
-                                <canvas ref={(c) => this.canvas = c} id="canvas" width="500" height="500"></canvas>
+                                <canvas ref={(c) => this.canvas = c} id="canvas" width="500" height="500"/>
                             </div>
                         </div>
                         <div className="col-sm-6">
