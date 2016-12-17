@@ -1,23 +1,16 @@
 const path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
-const postcssImport = require('postcss-import');
-const postcssNested = require('postcss-nested');
-const postcssMixins = require('postcss-mixins');
-const postcssSimpleVars = require('postcss-simple-vars');
-const postcssRemoveEmpty = require('postcss-discard-empty');
-const postcssRemoveComments = require('postcss-discard-comments');
-const postcssRemoveDuiplicate = require('postcss-discard-duplicates');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purify = require('purifycss-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
+const BabiliPlugin = require('babili-webpack-plugin');
 const app = {
     entry: './src/main.jsx',
     bundle: 'app.js',
     dest: 'assets'
 };
 var config = {
-    watch: false,
+    performance: false,
     context: __dirname,
     entry: [app.entry],
     output: {
@@ -26,7 +19,17 @@ var config = {
         path: path.join(__dirname, app.dest)
     },
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: [
+            '.js', '.jsx'
+        ],
+        modules: [
+            path.join(__dirname, 'src'),
+            'node_modules'
+        ],
+        alias: {
+            'react': 'inferno-compat',
+            'react-dom': 'inferno-compat'
+        }
     },
     plugins: [
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ru/),
@@ -41,12 +44,17 @@ var config = {
         new ExtractTextPlugin('style.css')
     ],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js(x)?$/,
-                exclude: /(node_modules|bower_components)/,
-                loader: 'babel',
-                query: {
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                    babelrc: false,
+                    cacheDirectory: true,
+                    presets: [
+                        'stage-0', 'react'
+                    ],
                     plugins: ['transform-runtime']
                 }
             }, {
@@ -60,20 +68,6 @@ var config = {
                 loader: 'url-loader?limit=8192&name=[name].[ext]'
             }
         ]
-    },
-    postcss(wp) {
-        return [
-            postcssImport({addDependencyTo: wp}),
-            postcssMixins(),
-            postcssSimpleVars(),
-            postcssNested(),
-            autoprefixer({
-                browsers: ['last 2 versions', '> 2%']
-            }),
-            postcssRemoveComments({removeAll: true}),
-            postcssRemoveEmpty(),
-            postcssRemoveDuiplicate()
-        ];
     }
 };
 if (process.env.NODE_ENV == 'production') {
@@ -87,14 +81,7 @@ if (process.env.NODE_ENV == 'production') {
         'process.env': {
             NODE_ENV: JSON.stringify('production')
         }
-    }), new webpack.optimize.UglifyJsPlugin({
-        compress: {
-            warnings: false
-        },
-        comments: false,
-        sourceMap: false,
-        mangle: true
-    }), new webpack.optimize.DedupePlugin());
+    }), new BabiliPlugin());
 }
 
 module.exports = config;
