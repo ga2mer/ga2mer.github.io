@@ -1,16 +1,10 @@
 import React, {Component} from 'react';
 import Cropper from 'react-cropper';
 import {saveAs} from 'file-saver';
-import HIRES from '../../images/hires.png';
-import LOSSY from '../../images/lossy.png';
-import LOSSY_V2 from '../../images/lossy_v2.png';
+import LOSSY from '../../images/lossy_v2.png';
 import '../../lib/blur_rect';
 export default class CoverGenerator extends Component {
     componentDidMount() {
-        this.state = {
-            hires: false,
-            v2: true
-        };
         this.initCanvas();
         this.initCover();
     }
@@ -31,17 +25,13 @@ export default class CoverGenerator extends Component {
                 this.renderCover();
             }
         };
-        this.cover.src = this.state.hires
-            ? HIRES
-            : (this.state.v2)
-                ? LOSSY_V2
-                : LOSSY;
+        this.cover.src = LOSSY;
     }
     onCrop = (e) => {
-        this.x = e.x;
-        this.y = e.y;
-        this.width = e.width;
-        this.height = e.height;
+        this.x = e.detail.x;
+        this.y = e.detail.y;
+        this.width = e.detail.width;
+        this.height = e.detail.height;
         this.renderCover();
     }
     handleFile = (e) => {
@@ -83,14 +73,6 @@ export default class CoverGenerator extends Component {
         this.ctx.fillStyle = '#2d2d2d';
         this.ctx.fillText(this.text, 14, 480);
     }
-    handleChangeQuality = (hires) => {
-        this.setState({
-            hires
-        }, () => {
-            this.ctx.clearRect(0, 0, 500, 500);
-            this.initCover();
-        });
-    }
     render() {
         return (
             <div className="flex middle-container">
@@ -102,10 +84,21 @@ export default class CoverGenerator extends Component {
                             </div>
                         </div>
                         <div className="col-sm-6">
-                            <Cropper className={'cropper'} ref={(c) => this.cropper = c} aspectRatio={1} dragMode={'move'} viewMode={1} zoomable={false} guides={false} crop={this.onCrop}/>
+                            <Cropper
+                                className={'cropper'}
+                                ref={(c) => this.cropper = c}
+                                aspectRatio={1}
+                                dragMode={'move'}
+                                viewMode={1}
+                                zoomable={false}
+                                guides={false}
+                                crop={this.onCrop}/>
                         </div>
                         <div className="col-sm-3">
-                            <Inputs onChangeQuality={this.handleChangeQuality} onFile={this.handleFile} onText={this.handleText} onSave={this.handleSave}/>
+                            <Inputs
+                                onFile={this.handleFile}
+                                onText={this.handleText}
+                                onSave={this.handleSave}/>
                         </div>
                     </div>
                 </div>
@@ -118,21 +111,17 @@ class Inputs extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fileLoaded: false,
-            hires: false
+            fileLoaded: false
         };
+    }
+    componentDidMount() {
+        this.file.addEventListener('change', this.handleFile);
     }
     handleFile = (e) => {
         if (e.target.files.length > 0) {
             this.setState({fileLoaded: true});
             this.props.onFile(e);
         }
-    }
-    handleChangeQuality = () => {
-        this.setState({
-            hires: !this.state.hires
-        });
-        this.props.onChangeQuality(!this.state.hires);
     }
     handleText = (e) => {
         this.props.onText(e);
@@ -144,17 +133,31 @@ class Inputs extends Component {
         return (
             <div className="output">
                 <div className="input-group">
-                    <div className="input-group-addon" id="basic-addon2">
-                        <input type="checkbox" value={this.state.hires} onChange={this.handleChangeQuality}/> {' HIRES'}
-                    </div>
-                    <input type="file" id="file" className="form-control" aria-describedby="basic-addon2" onChange={this.handleFile}/>
+                    <input
+                        type="file"
+                        id="file"
+                        className="form-control"
+                        aria-describedby="basic-addon2"
+                        ref={(c) => this.file = c}/>
                     <span className="input-group-addon" id="basic-addon2">Обложка</span>
                 </div>
                 <div className="input-group">
-                    <input type="text" id="name" placeholder="Укажите тип" className="form-control" aria-describedby="basic-addon2" disabled={!this.state.fileLoaded} onChange={this.handleText}/>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Укажите тип"
+                        className="form-control"
+                        aria-describedby="basic-addon2"
+                        disabled={!this.state.fileLoaded}
+                        onChange={this.handleText}/>
                     <span className="input-group-addon" id="basic-addon2">Тип альбома</span>
                 </div>
-                <button id="save" type="button" className="btn btn-secondary btn-block" disabled={!this.state.fileLoaded} onClick={this.handleSave}>Сохранить</button>
+                <button
+                    id="save"
+                    type="button"
+                    className="btn btn-secondary btn-block"
+                    disabled={!this.state.fileLoaded}
+                    onClick={this.handleSave}>Сохранить</button>
             </div>
         );
     }
