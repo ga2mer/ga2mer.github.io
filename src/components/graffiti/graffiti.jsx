@@ -116,51 +116,78 @@ export default class Graffiti extends Component {
     }
     render() {
         return (
-            <div className={'container middle-container'}>
-                <div className={'container center-text'} style={{
+            <div className={'vertical-center center-text'}>
+                <div style={{
                     maxWidth: '450px'
                 }}>
                     Здесь когда-нибудь будет описание
                     <form>
                         <label htmlFor={'token'}>Адрес с access_token</label>
-                        <div className={'input-group'}>
-                            <input id={'token'} type='text' className={'form-control sharp'} value={this.state.token} onChange={this.handleChangeToken} placeholder={'https://oauth.vk.com/blank...'}/>
-                            <span className='input-group-btn'>
-                                <button className='btn btn-primary sharp' type='button' onClick={this.handleGetToken}>Получить</button>
-                            </span>
+                        <div className={'form-control'}>
+                            <input
+                                id={'token'}
+                                type='text'
+                                className={'field'}
+                                value={this.state.token}
+                                onChange={this.handleChangeToken}
+                                placeholder={'https://oauth.vk.com/blank...'}/>
+                            <button className='item primary' type='button' onClick={this.handleGetToken}>Получить</button>
                         </div>
                         <label htmlFor={'file'}>Изображение в формате: png, jpg или gif</label>
-                        <div className={'input-group'}>
-                            <input id={'file'} className={'form-control sharp'} disabled={!this.state.tokenValid || this.state.url.length > 0} ref={(c) => this.file = c} type={'file'}/>
-                            <span className={'input-group-btn'}>
-                                <button className='btn btn-primary sharp' type='button' disabled={!this.state.tokenValid || this.state.url.length > 0} onClick={this.handleClearFile}>Очистить</button>
-                            </span>
+                        <div className={'form-control'}>
+                            <input
+                                id={'file'}
+                                className={'field'}
+                                disabled={!this.state.tokenValid || this.state.url.length > 0}
+                                ref={(c) => this.file = c}
+                                type={'file'}/>
+                            <button
+                                className='item primary'
+                                type='button'
+                                disabled={!this.state.tokenValid || this.state.url.length > 0}
+                                onClick={this.handleClearFile}>Очистить</button>
                         </div>
                         <div className={'strike'}>
                             <span>
                                 или ссылку на изображение
                             </span>
                         </div>
-                        <input className={'form-control sharp'} disabled={!this.state.tokenValid} type='text' value={this.state.url} onChange={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
-                        <div className={'divider'}/>
-                        <div>
-                            <button className='btn btn-secondary sharp' type='button' disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</button>
+                        <div className={'form-control'}>
+                            <input
+                                className={'field sharp'}
+                                disabled={!this.state.tokenValid}
+                                type='text'
+                                value={this.state.url}
+                                onChange={this.handleURL}
+                                placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
                         </div>
+                        <div className={'divider'}/>
+                        <button
+                            className='btn secondary'
+                            type='button'
+                            disabled={!this.state.tokenValid}
+                            onClick={this.handleLink}>Получить ссылку</button>
                         {this.state.info.type && <div className={'divider'}/>}
-                        {this.state.info.type && <div className={cx({
+                        {this.state.info.type && <div
+                            className={cx({
                             alert: true,
                             'alert-danger': this.state.info.type == 'error',
                             'alert-info': this.state.info.type == 'message',
                             'alert-success': this.state.info.type == 'link'
-                        })} role="alert">
+                        })}
+                            role="alert">
                             {(() => {
                                 if (this.state.info.type == 'link') {
                                     return (
-                                        <div className={'input-group'}>
-                                            <input type='text' ref={(c) => this.linkInput = c} className={'form-control sharp'} readOnly onClick={this.handleSelectAll} defaultValue={this.state.info.message}/>
-                                            <span className='input-group-btn'>
-                                                <button className='btn btn-primary sharp' type='button' onClick={this.handleCopyLink}>Скопировать</button>
-                                            </span>
+                                        <div className={'form-control'}>
+                                            <input
+                                                type='text'
+                                                ref={(c) => this.linkInput = c}
+                                                className={'field sharp'}
+                                                readOnly
+                                                onClick={this.handleSelectAll}
+                                                defaultValue={this.state.info.message}/>
+                                            <button className='item primary' type='button' onClick={this.handleCopyLink}>Скопировать</button>
                                         </div>
                                     );
                                 } else {

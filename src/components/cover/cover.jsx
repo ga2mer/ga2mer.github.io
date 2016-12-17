@@ -95,15 +95,15 @@ export default class CoverGenerator extends Component {
     }
     render() {
         return (
-            <div className="flex middle-container">
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <div className="cover">
-                                <canvas ref={(c) => this.canvas = c} id="canvas" width="500" height="500"/>
+            <div className='vertical-center'>
+                <div className='container-fluid'>
+                    <div className={'row around-xs'}>
+                        <div className='col-xs'>
+                            <div className='cover'>
+                                <canvas ref={(c) => this.canvas = c} id='canvas' width='500' height='500'/>
                             </div>
                         </div>
-                        <div className="col-sm-6">
+                        <div className='col-xs'>
                             <Cropper
                                 className={'cropper'}
                                 ref={(c) => this.cropper = c}
@@ -114,12 +114,12 @@ export default class CoverGenerator extends Component {
                                 guides={false}
                                 crop={this.onCrop}/>
                         </div>
-                        <div className="col-sm-3">
-                            <Inputs
-                                onFile={this.handleFile}
-                                onText={this.handleText}
-                                onSave={this.handleSave}/>
-                        </div>
+                    </div>
+                    <div className={'row center-text'}>
+                        <Inputs
+                            onFile={this.handleFile}
+                            onText={this.handleText}
+                            onSave={this.handleSave}/>
                     </div>
                 </div>
             </div>
@@ -151,31 +151,30 @@ class Inputs extends Component {
     }
     render() {
         return (
-            <div className="output">
-                <div className="input-group">
+            <div className='output'>
+                <div className='form-control'>
                     <input
-                        type="file"
-                        id="file"
-                        className="form-control"
-                        aria-describedby="basic-addon2"
+                        type='file'
+                        id='file'
+                        className='field'
+                        aria-describedby='basic-addon2'
                         ref={(c) => this.file = c}/>
-                    <span className="input-group-addon" id="basic-addon2">Обложка</span>
+                    <span className='item' id='basic-addon2'>Обложка</span>
                 </div>
-                <div className="input-group">
+                <div className='form-control'>
                     <input
-                        type="text"
-                        id="name"
-                        placeholder="Укажите тип"
-                        className="form-control"
-                        aria-describedby="basic-addon2"
+                        type='text'
+                        id='name'
+                        placeholder='Укажите тип'
+                        className='field'
+                        aria-describedby='basic-addon2'
                         disabled={!this.state.fileLoaded}
                         onChange={this.handleText}/>
-                    <span className="input-group-addon" id="basic-addon2">Тип альбома</span>
+                    <span className='item' id='basic-addon2'>Тип альбома</span>
                 </div>
                 <button
-                    id="save"
-                    type="button"
-                    className="btn btn-secondary btn-block"
+                    type='button'
+                    className='btn'
                     disabled={!this.state.fileLoaded}
                     onClick={this.handleSave}>Сохранить</button>
             </div>

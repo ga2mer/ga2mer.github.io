@@ -1,11 +1,5 @@
 #canvas {
-    box-shadow: 0 0 150px rgba(52, 114, 181, 0.5);
-}
-#save {
-    margin-top: 10px;
-}
-.cover {
-    text-align: center;
+    box-shadow: 0 0 35px rgba(52, 114, 181, 0.5);
 }
 .cropper-modal {
     opacity: 0.8 !important;
@@ -15,7 +9,7 @@
     width: 500px;
     height: 500px;
     margin: 0 auto;
-    box-shadow: 0 0 150px rgba(213, 67, 67, 0.5);
+    box-shadow: 0 0 35px rgba(213, 67, 67, 0.5);
 }
 .row {
     justify-content: center;
@@ -28,14 +22,4 @@
 }
 .output {
     margin-top: 50px;
-}
-.input-group:first-child {
-    margin-top: 0;
-}
-.input-group {
-    margin-top: 10px;
-}
-.input-group-addon {
-    padding: 0.575rem 0.75rem !important;
-    background-color: #fff !important;
 }
