@@ -3,6 +3,7 @@ import Cropper from 'react-cropper';
 import {saveAs} from 'file-saver';
 import LOSSY from '../../images/lossy_v2.png';
 import '../../lib/blur_rect';
+import downScaleImage from '../../lib/scaleImage';
 export default class CoverGenerator extends Component {
     componentDidMount() {
         this.initCanvas();
@@ -36,11 +37,30 @@ export default class CoverGenerator extends Component {
     }
     handleFile = (e) => {
         if (e.target.files.length > 0) {
-            var blobURL = URL.createObjectURL(e.target.files[0]);
-            this.img = document.createElement('img');
-            this.img.src = blobURL;
-            this.cropper.reset().replace(blobURL);
-            this.fileLoaded = true;
+            let blobURL = URL.createObjectURL(e.target.files[0]);
+            const tempImg = document.createElement('img');
+            tempImg.onload = () => {
+                const {width, height} = tempImg;
+                if (width > 800 && height > 800) {
+                    let scaleFactor;
+                    if (width > height) {
+                        scaleFactor = 800 / height;
+                    } else {
+                        scaleFactor = 800 / width;
+                    }
+                    this.img = downScaleImage(tempImg, scaleFactor);
+                    this.img.toBlob((blob) => {
+                        let blobURL = URL.createObjectURL(blob);
+                        this.cropper.reset().replace(blobURL);
+                        this.fileLoaded = true;
+                    });
+                } else {
+                    this.img = tempImg;
+                    this.cropper.reset().replace(blobURL);
+                    this.fileLoaded = true;
+                }
+            };
+            tempImg.src = blobURL;
         }
     }
     handleText = (e) => {
