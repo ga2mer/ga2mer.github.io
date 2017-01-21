@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purify = require('purifycss-webpack-plugin');
 const appDir = path.join(__dirname, 'src');
-const BabiliPlugin = require('babili-webpack-plugin');
 const app = {
     entry: './src/main.jsx',
     bundle: 'app.js',
@@ -53,7 +52,16 @@ var config = {
                     babelrc: false,
                     cacheDirectory: true,
                     presets: [
-                        'stage-0', 'react'
+                        [
+                            'latest', {
+                                es2015: {
+                                    loose: true,
+                                    modules: false
+                                }
+                            }
+                        ],
+                        'stage-0',
+                        'react'
                     ],
                     plugins: ['transform-runtime']
                 }
@@ -81,7 +89,7 @@ if (process.env.NODE_ENV == 'production') {
         'process.env': {
             NODE_ENV: JSON.stringify('production')
         }
-    }), new BabiliPlugin());
+    }), new webpack.optimize.UglifyJsPlugin({comments: false}));
 }
 
 module.exports = config;
