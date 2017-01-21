@@ -65,7 +65,7 @@ export default class CoverGenerator extends Component {
         ctx._blurRect(0, 704, 616, 96, 1, 2);
         ctx._blurRect(671, 652, 129, 148, 1, 2);
         ctx.drawImage(this.cover, 0, 517, 800, 283);
-        ctx.font = '42px Roboto Medium';
+        ctx.font = '42px MuseoBlack';
         ctx.fillStyle = '#2d2d2d';
         ctx.fillText(this.text, 34, 764);
         canvas.toBlob((blob) => {
@@ -78,7 +78,7 @@ export default class CoverGenerator extends Component {
         this.ctx._blurRect(0, 439, 400, 61, 1, 2);
         this.ctx._blurRect(419, 404, 70, 80, 1, 2);
         this.ctx.drawImage(this.cover, 0, 323, 500, 177);
-        this.ctx.font = '32px Roboto Medium';
+        this.ctx.font = '32px MuseoBlack';
         this.ctx.fillStyle = '#2d2d2d';
         this.ctx.fillText(this.text, 14, 480);
     }
