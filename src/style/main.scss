@@ -1,0 +1,121 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,300italic&subset=latin,cyrillic);
+@import "antd/dist/antd";
+@import "cropperjs/dist/cropper.min.css";
+
+@font-face {
+  font-family: "MuseoBlack";
+  src: url(/assets/MuseoSansBlack.woff);
+}
+
+.ant-layout {
+    background: white !important;
+}
+#root, .layout-center{
+    height: 100%;
+}
+.links {
+    text-align: center;
+    li {
+        display: inline-flex;
+        a {
+            padding: 8px;
+        }
+    }
+}
+
+.img-fluid {
+    max-width:100%;
+    height:auto;
+}
+.center-horizontal {
+    justify-content: center;
+    display: flex;
+}
+.no-border {
+    border: none;
+    border-bottom: none;
+}
+.alert-center {
+    padding: 8px 0px 8px 0px !important;
+}
+.text-center {
+    text-align: center;
+}
+.form-nopadding {
+    .ant-form-item {
+        margin-bottom: 0px; 
+    }
+}
+
+.form-cover {
+    .ant-form-item {
+        margin-bottom: 5px;
+    }
+}
+
+.button-left-sharp {
+    border-radius: 0px 4px 4px 0px !important;
+}
+.wat {
+    line-height: 1.95 !important;
+}
+.divider {
+    height: 1px;
+    width: 100%;
+    display: block;
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+}
+
+.strike {
+    display: block;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+
+    > span {
+        position: relative;
+        display: inline-block;
+
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 9999px;
+            height: 1px;
+            background: red;
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 9999px;
+            height: 1px;
+            background: red;
+            background-color: #e5e5e5;
+            right: 100%;
+            margin-right: 15px;
+        }
+
+        &:after {
+            background-color: #e5e5e5;
+            left: 100%;
+            margin-left: 15px;
+        }
+    }
+}
+
+.cropper {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    box-shadow: 0 0 35px rgba(213,67,67,.5);
+}
+.cover #canvas {
+    box-shadow: 0 0 35px rgba(52,114,181,.5);
+}
+.output {
+    margin-top: 50px;
+}
