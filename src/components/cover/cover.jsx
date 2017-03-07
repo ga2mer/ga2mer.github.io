@@ -1,8 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Cropper from 'react-cropper';
-import {saveAs} from 'file-saver';
+import { saveAs } from 'file-saver';
 import LOSSY from '../../images/lossy_v2.png';
 import '../../lib/blur_rect';
+import { Row, Col, Form, Input, Button } from 'antd';
+const FormItem = Form.Item;
 export default class CoverGenerator extends Component {
     componentDidMount() {
         this.initCanvas();
@@ -84,15 +86,15 @@ export default class CoverGenerator extends Component {
     }
     render() {
         return (
-            <div className='vertical-center'>
+            <Row type={'flex'} justify={'center'} align={'middle'} style={{
+                minHeight: '100vh'
+            }}>
                 <div className='container-fluid'>
-                    <div className={'row around-xs'}>
-                        <div className='col-xs'>
-                            <div className='cover'>
-                                <canvas ref={(c) => this.canvas = c} id='canvas' width='500' height='500'/>
-                            </div>
-                        </div>
-                        <div className='col-xs'>
+                    <Row gutter={32}>
+                        <Col span={12} className={'cover'}>
+                            <canvas ref={(c) => this.canvas = c} id='canvas' width='500' height='500' />
+                        </Col>
+                        <Col span={12}>
                             <Cropper
                                 className={'cropper'}
                                 ref={(c) => this.cropper = c}
@@ -101,17 +103,17 @@ export default class CoverGenerator extends Component {
                                 viewMode={1}
                                 zoomable={false}
                                 guides={false}
-                                crop={this.onCrop}/>
-                        </div>
-                    </div>
-                    <div className={'row center-text'}>
+                                crop={this.onCrop} />
+                        </Col>
+                    </Row>
+                    <Row type={'flex'} justify={'center'}>
                         <Inputs
                             onFile={this.handleFile}
                             onText={this.handleText}
-                            onSave={this.handleSave}/>
-                    </div>
+                            onSave={this.handleSave} />
+                    </Row>
                 </div>
-            </div>
+            </Row>
         );
     }
 }
@@ -128,7 +130,7 @@ class Inputs extends Component {
     }
     handleFile = (e) => {
         if (e.target.files.length > 0) {
-            this.setState({fileLoaded: true});
+            this.setState({ fileLoaded: true });
             this.props.onFile(e);
         }
     }
@@ -140,33 +142,19 @@ class Inputs extends Component {
     }
     render() {
         return (
-            <div className='output'>
-                <div className='form-control'>
-                    <input
-                        type='file'
-                        id='file'
-                        className='field'
-                        aria-describedby='basic-addon2'
-                        ref={(c) => this.file = c}/>
-                    <span className='item' id='basic-addon2'>Обложка</span>
-                </div>
-                <div className='form-control'>
-                    <input
-                        type='text'
-                        id='name'
-                        placeholder='Укажите тип'
-                        className='field'
-                        aria-describedby='basic-addon2'
-                        disabled={!this.state.fileLoaded}
-                        onChange={this.handleText}/>
-                    <span className='item' id='basic-addon2'>Тип альбома</span>
-                </div>
-                <button
-                    type='button'
-                    className='btn'
-                    disabled={!this.state.fileLoaded}
-                    onClick={this.handleSave}>Сохранить</button>
-            </div>
+            <Form className='output form-cover'>
+                <FormItem>
+                    <Input style={{ height: '100%' }} type='file' ref={(c) => c ? this.file = c.refs.input : null} className={'sharp'} addonAfter={'Обложка'}/>
+                </FormItem>
+                <FormItem>
+                    <Input type='text' id='name' placeholder='Укажите тип' className='sharp' aria-describedby='basic-addon2' disabled={!this.state.fileLoaded} onChange={this.handleText} addonAfter={'Тип альбома'}/>
+                </FormItem>
+                <FormItem>
+                    <Row type={'flex'} justify={'center'}>
+                        <Button disabled={!this.state.fileLoaded} onClick={this.handleSave}>Сохранить</Button>
+                    </Row>
+                </FormItem>
+            </Form>
         );
     }
 };

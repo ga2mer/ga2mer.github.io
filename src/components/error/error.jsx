@@ -1,11 +1,12 @@
 import React from 'react';
+import { Row } from 'antd';
 import Ram from '../../images/ram.png';
 export default function Error() {
     return (
-        <div className={'container center-text'}  style={{
-            maxWidth: '450px'
+        <Row type={'flex'} justify={'center'} align={'middle'} style={{
+            minHeight: '100vh'
         }}>
             <img src={Ram} className={'img-fluid'}/>
-        </div>
+        </Row>
     );
 }

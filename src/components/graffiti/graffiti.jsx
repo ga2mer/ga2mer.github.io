@@ -1,7 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import cx from 'classnames';
 import fetchJsonp from 'fetch-jsonp';
 import VKError from '../../lib/VKError';
+import { Row, Form, Input, Button, Alert } from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 export default class Graffiti extends Component {
     constructor(props) {
         super(props);
@@ -52,7 +55,7 @@ export default class Graffiti extends Component {
         });
     }
     handleURL = (e) => {
-        this.setState({url: e.target.value});
+        this.setState({ url: e.target.value });
     }
     setInfo = (type, message) => {
         this.setState({
@@ -76,7 +79,7 @@ export default class Graffiti extends Component {
         fd.append('file', fileEl.files[0]);
         var regexHttps = /pu\.vk\.com\/c(\d+)\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
         var regexHttp = /cs(\d+)\.vk\.com\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)/i;
-        this.setInfo('message', 'Загрузка изображения, подождите');
+        this.setInfo('info', 'Загрузка изображения, подождите');
         fetchJsonp(`https://api.vk.com/method/docs.getUploadServer?v=5.54&access_token=${token}&type=graffiti`).then(this.checkStatusP).then(this.parseJSON).then((uploadServer) => {
             var isHTTPS = regexHttps.test(uploadServer.response.upload_url);
             var regex = isHTTPS && regexHttps || regexHttp;
@@ -91,12 +94,12 @@ export default class Graffiti extends Component {
                     body: fd
                 }).then(this.checkStatus).then(this.parseJSON);
             } else if (this.state.url) {
-                return fetch(`https://akg.moe/vkgraffiti/upload_by_url?url=${this.state.url}&c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {method: 'POST'}).then(this.checkStatus).then(this.parseJSON);
+                return fetch(`https://akg.moe/vkgraffiti/upload_by_url?url=${this.state.url}&c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, { method: 'POST' }).then(this.checkStatus).then(this.parseJSON);
             }
         }).then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(this.parseJSON)).then((responseDoc) => {
             var doc = responseDoc.response[0];
             var link = `https://vk.com/doc${doc.owner_id}_${doc.id}`;
-            this.setInfo('link', link);
+            this.setInfo('success', link);
         }).catch((err) => {
             if (err instanceof VKError) {
                 return this.setInfo('error', err.message);
@@ -114,90 +117,60 @@ export default class Graffiti extends Component {
         this.linkInput.select();
         document.execCommand('Copy');
     }
+    renderAlert = () => {
+        if (this.state.info.type == 'success') {
+            return (
+                <FormItem>
+                    <InputGroup>
+                        <Input style={{ width: '64%' }} type='text' ref={(c) => c ? this.linkInput = c.refs.input : null} className={'field sharp'} readOnly onClick={this.handleSelectAll} defaultValue={this.state.info.message} />
+                        <Button type={'primary'} size={'large'} className={'button-left-sharp'} onClick={this.handleCopyLink}>Скопировать</Button>
+                    </InputGroup>
+                </FormItem>
+            );
+        } else {
+            return <div className={'text-center'}>{this.state.info.message}</div>;
+        }
+    }
+    renderLabelText = (text) => <div className={'text-center'}>{text}</div>
     render() {
         return (
-            <div className={'vertical-center center-text'}>
-                <div style={{
-                    maxWidth: '450px'
-                }}>
-                    Здесь когда-нибудь будет описание
-                    <form>
-                        <label htmlFor={'token'}>Адрес с access_token</label>
-                        <div className={'form-control'}>
-                            <input
-                                id={'token'}
-                                type='text'
-                                className={'field'}
-                                value={this.state.token}
-                                onChange={this.handleChangeToken}
-                                placeholder={'https://oauth.vk.com/blank...'}/>
-                            <button className='item primary' type='button' onClick={this.handleGetToken}>Получить</button>
-                        </div>
-                        <label htmlFor={'file'}>Изображение в формате: png, jpg или gif</label>
-                        <div className={'form-control'}>
-                            <input
-                                id={'file'}
-                                className={'field'}
-                                disabled={!this.state.tokenValid || this.state.url.length > 0}
-                                ref={(c) => this.file = c}
-                                type={'file'}/>
-                            <button
-                                className='item primary'
-                                type='button'
-                                disabled={!this.state.tokenValid || this.state.url.length > 0}
-                                onClick={this.handleClearFile}>Очистить</button>
-                        </div>
-                        <div className={'strike'}>
-                            <span>
-                                или ссылку на изображение
-                            </span>
-                        </div>
-                        <div className={'form-control'}>
-                            <input
-                                className={'field sharp'}
-                                disabled={!this.state.tokenValid}
-                                type='text'
-                                value={this.state.url}
-                                onChange={this.handleURL}
-                                placeholder={'e.g. http://i.imgur.com/cPuty2U.png'}/>
-                        </div>
-                        <div className={'divider'}/>
-                        <button
-                            className='btn secondary'
-                            type='button'
-                            disabled={!this.state.tokenValid}
-                            onClick={this.handleLink}>Получить ссылку</button>
-                        {this.state.info.type && <div className={'divider'}/>}
-                        {this.state.info.type && <div
-                            className={cx({
-                            alert: true,
-                            'alert-danger': this.state.info.type == 'error',
-                            'alert-info': this.state.info.type == 'message',
-                            'alert-success': this.state.info.type == 'link'
-                        })}
-                            role="alert">
-                            {(() => {
-                                if (this.state.info.type == 'link') {
-                                    return (
-                                        <div className={'form-control'}>
-                                            <input
-                                                type='text'
-                                                ref={(c) => this.linkInput = c}
-                                                className={'field sharp'}
-                                                readOnly
-                                                onClick={this.handleSelectAll}
-                                                defaultValue={this.state.info.message}/>
-                                            <button className='item primary' type='button' onClick={this.handleCopyLink}>Скопировать</button>
-                                        </div>
-                                    );
-                                } else {
-                                    return this.state.info.message;
-                                }
-                            })()}
-                        </div>}
-                    </form>
+            <Row type={'flex'} justify={'center'} align={'middle'} style={{
+                minHeight: '100vh'
+            }}>
+                <div>
+                    <div className={'text-center'}>Здесь когда-нибудь будет описание</div>
+                    <div>
+                        <Form layout={'vertical'} className={'form-nopadding'}>
+                            <FormItem label={this.renderLabelText('Адрес с access_token')}>
+                                <InputGroup>
+                                    <Input style={{ width: '70%' }} type='text' className={'field'} value={this.state.token} onChange={this.handleChangeToken} placeholder={'https://oauth.vk.com/blank...'} />
+                                    <Button type={'primary'} size={'large'} className={'button-left-sharp'} onClick={this.handleGetToken}>Получить</Button>
+                                </InputGroup>
+                            </FormItem>
+                            <FormItem label={this.renderLabelText('Изображение в формате: png, jpg или gif')}>
+                                <InputGroup>
+                                    <Input style={{ width: '70%', height: '100%' }} id={'file'} className={'field'} disabled={!this.state.tokenValid || this.state.url.length > 0} ref={(c) => c ? this.file = c.refs.input : null} type={'file'} />
+                                    <Button type={'primary'} size={'large'} className={'button-left-sharp wat'} disabled={!this.state.tokenValid || this.state.url.length > 0} onClick={this.handleClearFile}>Очистить</Button>
+                                </InputGroup>
+                            </FormItem>
+                            <div className={'strike'}>
+                                <span>
+                                    или ссылку на изображение
+                                </span>
+                            </div>
+                            <FormItem>
+                                <Input className={'sharp'} disabled={!this.state.tokenValid} type='text' value={this.state.url} onChange={this.handleURL} placeholder={'e.g. http://i.imgur.com/cPuty2U.png'} />
+                            </FormItem>
+                            <div className={'divider'} />
+                            <Row type={'flex'} justify={'center'}>
+                                <Button disabled={!this.state.tokenValid} onClick={this.handleLink}>Получить ссылку</Button>
+                            </Row>
+                            {this.state.info.type && <div className={'divider'} />}
+                            {this.state.info.type && <Alert className={'alert-center'} message={this.renderAlert()} type={this.state.info.type} />}
+                        </Form>
+                    </div>
                 </div>
-            </div>
+            </Row>
         );
     }
 }

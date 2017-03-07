@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purify = require('purifycss-webpack-plugin');
+const BabiliPlugin = require("babili-webpack-plugin");
 const appDir = path.join(__dirname, 'src');
 const app = {
     entry: './src/main.jsx',
@@ -24,11 +25,7 @@ var config = {
         modules: [
             path.join(__dirname, 'src'),
             'node_modules'
-        ],
-        alias: {
-            'react': 'inferno-compat',
-            'react-dom': 'inferno-compat'
-        }
+        ]
     },
     plugins: [
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ru/),
@@ -52,22 +49,14 @@ var config = {
                     babelrc: false,
                     cacheDirectory: true,
                     presets: [
-                        [
-                            'latest', {
-                                es2015: {
-                                    loose: true,
-                                    modules: false
-                                }
-                            }
-                        ],
                         'stage-0',
                         'react'
                     ],
-                    plugins: ['transform-runtime']
+                    plugins: [['import', { libraryName: 'antd' }], 'transform-runtime']
                 }
             }, {
                 test: /\.(s)?css$/,
-                loader: ExtractTextPlugin.extract({fallbackLoader: 'style-loader', loader: 'css-loader!postcss-loader'})
+                loader: ExtractTextPlugin.extract({fallback: 'style-loader', use: 'css-loader!postcss-loader'})
             }, {
                 test: /\.woff|\.woff2|\.svg|.eot|\.ttf/,
                 loader: 'url?prefix=font/&limit=10000&name=[name].[ext]'
@@ -89,7 +78,7 @@ if (process.env.NODE_ENV == 'production') {
         'process.env': {
             NODE_ENV: JSON.stringify('production')
         }
-    }), new webpack.optimize.UglifyJsPlugin({comments: false}));
+    }), new BabiliPlugin({mangle: true}, {comments: false}));
 }
 
 module.exports = config;
