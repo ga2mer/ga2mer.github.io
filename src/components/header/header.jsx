@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Menu, Row, Col } from 'antd';
+import { Menu } from 'antd';
 import { withRouter } from 'react-router'
 class Header extends React.Component {
     static propTypes = {

@@ -1,8 +1,6 @@
 import './style/main.scss';
 import React from 'react';
 import { render } from 'react-dom';
-import ReactDOMFeatureFlags from 'react-dom/lib/ReactDOMFeatureFlags';
-ReactDOMFeatureFlags.useFiber = true;
 import {
     BrowserRouter as Router,
     Route,
@@ -11,10 +9,10 @@ import {
 import { Layout } from 'antd';
 const { Sider, Content } = Layout;
 import HeaderComponent from './components/header';
-import Home from './components/home';
-import Graffiti from './components/graffiti';
-import Cover from './components/cover';
-import Error from './components/error';
+import Home from './components/home/home.jsx';
+import Graffiti from './components/graffiti/graffiti.jsx';
+import Cover from './components/cover/cover.jsx';
+import Error from './components/error/error.jsx';
 render((
     <Router>
         <Layout className={'layout-center'}>
