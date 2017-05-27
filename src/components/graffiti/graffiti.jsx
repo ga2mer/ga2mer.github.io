@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import cx from 'classnames';
 import fetchJsonp from 'fetch-jsonp';
 import VKError from '../../lib/VKError';
 import { Row, Form, Input, Button, Alert } from 'antd';
@@ -76,7 +75,6 @@ export default class Graffiti extends Component {
         const [,
             token] = /access_token=(.+)&expires_in/.exec(tokenEl);
         var fd = new FormData();
-        fd.append('file', fileEl.files[0]);
         var regexHttps = /pu\.vk\.com\/c(\d+)\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)&api=1/i;
         var regexHttp = /cs(\d+)\.vk\.com\/upload\.php\?act=add_doc&mid=(\d+)&aid=0&gid=0&type=graffiti&hash=([a-z0-9]+)&rhash=([a-z0-9]+)/i;
         this.setInfo('info', 'Загрузка изображения, подождите');
@@ -88,13 +86,19 @@ export default class Graffiti extends Component {
                 mid,
                 hash,
                 rhash] = regex.exec(uploadServer.response.upload_url);
+            fd.append('c', c);
+            fd.append('mid', mid);
+            fd.append('hash', hash);
+            fd.append('rhash', rhash);
             if (fileEl.files.length > 0) {
-                return fetch(`https://akg.moe/vkgraffiti/upload_by_file?c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, {
+                fd.append('file', fileEl.files[0]);
+                return fetch('https://ga2mer.cf/vkgraffiti/upload_by_file', {
                     method: 'POST',
                     body: fd
                 }).then(this.checkStatus).then(this.parseJSON);
             } else if (this.state.url) {
-                return fetch(`https://akg.moe/vkgraffiti/upload_by_url?url=${this.state.url}&c=${c}&mid=${mid}&hash=${hash}&rhash=${rhash}`, { method: 'POST' }).then(this.checkStatus).then(this.parseJSON);
+                fd.append('url', this.state.url);
+                return fetch('https://ga2mer.cf/vkgraffiti/upload_by_url', { body: fd, method: 'POST' }).then(this.checkStatus).then(this.parseJSON);
             }
         }).then((responseFile) => fetchJsonp(`https://api.vk.com/method/docs.save?v=5.54&access_token=${token}&file=${responseFile.file}`).then(this.parseJSON)).then((responseDoc) => {
             var doc = responseDoc.response[0];
