@@ -6,6 +6,14 @@
   font-family: "MuseoBlack";
   src: url(/assets/MuseoSansBlack.woff);
 }
+@font-face {
+  font-family: "MonsterratSemiBold";
+  src: url(/assets/Montserrat-SemiBold.woff2);
+}
+@font-face {
+  font-family: "MonsterratBold";
+  src: url(/assets/Montserrat-Bold.woff2);
+}
 
 .ant-layout {
     background: white !important;

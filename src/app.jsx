@@ -10,7 +10,6 @@ import { Layout } from 'antd';
 const { Sider, Content } = Layout;
 import HeaderComponent from './components/header';
 import Home from './components/home/home.jsx';
-import Graffiti from './components/graffiti/graffiti.jsx';
 import Cover from './components/cover/cover.jsx';
 import Error from './components/error/error.jsx';
 render((
@@ -21,7 +20,6 @@ render((
                 <Content>
                     <Switch>
                         <Route path={'/'} exact component={Home} />
-                        <Route path={'/graffiti'} component={Graffiti} />
                         <Route path={'/cover'} component={Cover} />
                         <Route component={Error} />
                     </Switch>

@@ -1,6 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react';
 import { Menu } from 'antd';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 class Header extends React.Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
@@ -19,7 +20,6 @@ class Header extends React.Component {
                 selectedKeys={[location.pathname]}
             >
                 <Menu.Item key="/">Me</Menu.Item>
-                <Menu.Item key="/graffiti">Graffiti</Menu.Item>
                 <Menu.Item key="/cover">Cover</Menu.Item>
             </Menu>
         );

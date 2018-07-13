@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
 import Cropper from 'react-cropper';
 import { saveAs } from 'file-saver';
-import LOSSY from '../../images/lossy_v2.png';
-import '../../lib/blur_rect';
+import '../../lib/letterSpacing';
 import { Row, Col, Form, Input, Button } from 'antd';
 const FormItem = Form.Item;
+
+const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="102" height="120"> 
+<path 
+id="Aki-Logo" 
+fill-rule="evenodd" 
+fill="#fff" 
+d="M1310,210L1258.75,90h-17L1293,210h17Zm-33.25-21.909-18.5,7.22-50.25-24.9,20-46.8,17.25-5.975-18.5,47.3Z" 
+transform="translate(-1208 -90)" 
+/>
+</svg>`;
+
 export default class CoverGenerator extends Component {
     componentDidMount() {
-        this.initCanvas();
-        this.initCover();
+        document.fonts.load('1pt "MonsterratBold"').then(document.fonts.load('1pt "MonsterratSemiBold"')).then(() => {
+            this.initCanvas();
+            this.initCover();
+        });
     }
     componentWillUnmount() {
         this.blobs.forEach((item) => {
@@ -26,14 +38,15 @@ export default class CoverGenerator extends Component {
         this.ctx = this.canvas.getContext('2d');
     }
     initCover = () => {
-        this.cover = new Image();
-        this.cover.onload = () => {
-            this.ctx.drawImage(this.cover, 0, 323, 500, 177);
-            if (this.fileLoaded) {
-                this.renderCover();
-            }
-        };
-        this.cover.src = LOSSY;
+        this.logo = new Image();
+        const svg = new Blob([logo], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(svg);
+
+        this.logo.onload = () => {
+            this.renderCover();
+            URL.revokeObjectURL(url);
+        }
+        this.logo.src = url;
     }
     onCrop = (e) => {
         this.x = e.detail.x;
@@ -59,40 +72,46 @@ export default class CoverGenerator extends Component {
         this.renderCover();
     }
     handleSave = () => {
-        let canvas = document.createElement('canvas');
-        canvas.width = 800;
-        canvas.height = 800;
-        let ctx = canvas.getContext('2d');
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 800, 800);
-        ctx._blurRect(0, 704, 616, 96, 1, 2);
-        ctx._blurRect(671, 652, 129, 148, 1, 2);
-        ctx.drawImage(this.cover, 0, 517, 800, 283);
-        ctx.font = '42px MuseoBlack';
-        ctx.fillStyle = '#2d2d2d';
-        ctx.fillText(this.text, 34, 764);
-        canvas.toBlob((blob) => {
+        this.canvas.toBlob((blob) => {
             saveAs(blob, 'cover.png');
         });
     }
     renderCover() {
-        this.ctx.clearRect(0, 0, 500, 500);
-        this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 500, 500);
-        this.ctx._blurRect(0, 439, 400, 61, 1, 2);
-        this.ctx._blurRect(419, 404, 70, 80, 1, 2);
-        this.ctx.drawImage(this.cover, 0, 323, 500, 177);
-        this.ctx.font = '32px MuseoBlack';
-        this.ctx.fillStyle = '#2d2d2d';
-        this.ctx.fillText(this.text, 14, 480);
+        this.ctx.clearRect(0, 0, 800, 800);
+        if (this.fileLoaded) {
+            this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 800, 800);
+        }
+        var gradient = this.ctx.createRadialGradient(750, -100, 0, 750, -100, 500);
+        gradient.addColorStop(0, 'rgb(0, 0, 0, 0.25');
+        gradient.addColorStop(1, 'transparent');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, 800, 800);
+        this.ctx.drawImage(this.logo, 690, 51, 59, 69);
+        const musicCanvas = document.createElement('canvas');
+        musicCanvas.width = 100;
+        musicCanvas.height = 200;
+        const musicCtx = musicCanvas.getContext('2d');
+        musicCtx.clearRect(0, 0, 800, 800);
+        musicCtx.rotate(67 * Math.PI / 180);
+        musicCtx.font = '10pt MonsterratSemiBold';
+        musicCtx.fillStyle = '#fff';
+        musicCtx.letterSpacing = 2,5;
+        musicCtx.fillText('МУЗЫКА', 5, 0);
+        this.ctx.drawImage(musicCanvas, 722, 43);
+        this.ctx.font = '23pt MonsterratBold';
+        this.ctx.fillStyle = '#fff';
+        this.ctx.textAlign = 'right';
+        this.ctx.fillText(this.text, 663, 96);
     }
     render() {
         return (
             <Row type={'flex'} justify={'center'} align={'middle'} style={{
                 minHeight: '100vh'
             }}>
-                <div className='container-fluid'>
+                <div className='container-fluid' >
                     <Row gutter={32}>
                         <Col span={12} className={'cover'}>
-                            <canvas ref={(c) => this.canvas = c} id='canvas' width='500' height='500' />
+                            <canvas ref={(c) => this.canvas = c} id='canvas' width='800' height='800' style={({ width: 500 })} />
                         </Col>
                         <Col span={12}>
                             <Cropper
@@ -125,9 +144,6 @@ class Inputs extends Component {
             fileLoaded: false
         };
     }
-    componentDidMount() {
-        this.file.addEventListener('change', this.handleFile);
-    }
     handleFile = (e) => {
         if (e.target.files.length > 0) {
             this.setState({ fileLoaded: true });
@@ -144,10 +160,10 @@ class Inputs extends Component {
         return (
             <Form className='output form-cover'>
                 <FormItem>
-                    <Input style={{ height: '100%' }} type='file' ref={(c) => c ? this.file = c.refs.input : null} className={'sharp'} addonAfter={'Обложка'}/>
+                    <Input style={{ height: '100%' }} type='file' ref={(c) => c ? this.file = c.refs.input : null} onChange={this.handleFile} className={'sharp'} addonAfter={'Обложка'} />
                 </FormItem>
                 <FormItem>
-                    <Input type='text' id='name' placeholder='Укажите тип' className='sharp' aria-describedby='basic-addon2' disabled={!this.state.fileLoaded} onChange={this.handleText} addonAfter={'Тип альбома'}/>
+                    <Input type='text' id='name' placeholder='Укажите тип' className='sharp' aria-describedby='basic-addon2' disabled={!this.state.fileLoaded} onChange={this.handleText} addonAfter={'Тип альбома'} />
                 </FormItem>
                 <FormItem>
                     <Row type={'flex'} justify={'center'}>
