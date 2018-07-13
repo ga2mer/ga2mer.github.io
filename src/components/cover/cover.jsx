@@ -95,7 +95,7 @@ export default class CoverGenerator extends Component {
         musicCtx.rotate(67 * Math.PI / 180);
         musicCtx.font = '10pt MontserratSemiBold';
         musicCtx.fillStyle = '#fff';
-        musicCtx.letterSpacing = 2,5;
+        musicCtx.letterSpacing = 2.5;
         musicCtx.fillText('МУЗЫКА', 5, 0);
         this.ctx.drawImage(musicCanvas, 722, 43);
         this.ctx.font = '23pt MontserratBold';
