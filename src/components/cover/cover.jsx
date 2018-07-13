@@ -17,7 +17,7 @@ transform="translate(-1208 -90)"
 
 export default class CoverGenerator extends Component {
     componentDidMount() {
-        document.fonts.load('1pt "MonsterratBold"').then(document.fonts.load('1pt "MonsterratSemiBold"')).then(() => {
+        document.fonts.load('1pt "MontserratBold"').then(document.fonts.load('1pt "MontserratSemiBold"')).then(() => {
             this.initCanvas();
             this.initCover();
         });
@@ -93,12 +93,12 @@ export default class CoverGenerator extends Component {
         const musicCtx = musicCanvas.getContext('2d');
         musicCtx.clearRect(0, 0, 800, 800);
         musicCtx.rotate(67 * Math.PI / 180);
-        musicCtx.font = '10pt MonsterratSemiBold';
+        musicCtx.font = '10pt MontserratSemiBold';
         musicCtx.fillStyle = '#fff';
         musicCtx.letterSpacing = 2,5;
         musicCtx.fillText('МУЗЫКА', 5, 0);
         this.ctx.drawImage(musicCanvas, 722, 43);
-        this.ctx.font = '23pt MonsterratBold';
+        this.ctx.font = '23pt MontserratBold';
         this.ctx.fillStyle = '#fff';
         this.ctx.textAlign = 'right';
         this.ctx.fillText(this.text, 663, 96);
