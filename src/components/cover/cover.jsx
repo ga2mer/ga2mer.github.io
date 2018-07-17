@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Cropper from 'react-cropper';
 import { saveAs } from 'file-saver';
 import '../../lib/letterSpacing';
-import { Row, Col, Form, Input, Button } from 'antd';
+import { Row, Col, Form, Input, Button, Slider } from 'antd';
 const FormItem = Form.Item;
 
 const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="102" height="120"> 
@@ -34,6 +34,7 @@ export default class CoverGenerator extends Component {
     text = '';
     fileLoaded = false;
     blobs = [];
+    opacity = 0.45;
     initCanvas = () => {
         this.ctx = this.canvas.getContext('2d');
     }
@@ -76,13 +77,17 @@ export default class CoverGenerator extends Component {
             saveAs(blob, 'cover.png');
         });
     }
+    handleOpacity = (value) => {
+        this.opacity = value;
+        this.renderCover();
+    }
     renderCover() {
         this.ctx.clearRect(0, 0, 800, 800);
         if (this.fileLoaded) {
             this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height, 0, 0, 800, 800);
         }
         var gradient = this.ctx.createRadialGradient(750, -100, 0, 750, -100, 500);
-        gradient.addColorStop(0, 'rgb(0, 0, 0, 0.25');
+        gradient.addColorStop(0, `rgb(0, 0, 0, ${this.opacity}`);
         gradient.addColorStop(1, 'transparent');
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, 800, 800);
@@ -129,7 +134,8 @@ export default class CoverGenerator extends Component {
                         <Inputs
                             onFile={this.handleFile}
                             onText={this.handleText}
-                            onSave={this.handleSave} />
+                            onSave={this.handleSave}
+                            onOpacityChange={this.handleOpacity} />
                     </Row>
                 </div>
             </Row>
@@ -156,6 +162,9 @@ class Inputs extends Component {
     handleSave = () => {
         this.props.onSave();
     }
+    handleOpacityChange = (value) => {
+        this.props.onOpacityChange(value);
+    }
     render() {
         return (
             <Form className='output form-cover'>
@@ -164,6 +173,9 @@ class Inputs extends Component {
                 </FormItem>
                 <FormItem>
                     <Input type='text' id='name' placeholder='Укажите тип' className='sharp' aria-describedby='basic-addon2' disabled={!this.state.fileLoaded} onChange={this.handleText} addonAfter={'Тип альбома'} />
+                </FormItem>
+                <FormItem>
+                    <Slider defaultValue={0.45} min={0} step={0.01} max={1} onChange={this.handleOpacityChange} />
                 </FormItem>
                 <FormItem>
                     <Row type={'flex'} justify={'center'}>
